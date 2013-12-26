@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" type="text/css" href="/is/css/bootstrap.min.css" />
+<script type="text/javascript" src="/is/js/jquery-1.10.2.min.js"></script>
+<script type="text/javascript" src="/is/js/lab1.js"></script>
+<title>Lab 1</title>
+</head>
+<body>
+
+	<div id="vestibule" style="display: none;">
+		<h5>Select vestibule:</h5>
+		<select id="vestibules">
+
+		</select>
+	</div>
+	<div id="vestibule_selected" style="display: none;"></div>
+
+
+	<select id="scanner" style="display: none;">
+		<h5>Select scanner:</h5>
+	</select>
+	<br />
+	<a class="btn btn-primary" style="display: none;">Download</a>
+	<script>
+	var loadFile = function(file) {
+		$.ajax("").ready(fcuntion(data){
+				
+			});
+	};
+
+	$(document).ready(function() {
+		$.ajax("/is/rest/res/vestibules").done(
+				function(data) {
+					for (var i = 0; i < data.length; i++) {
+						$("#vestibules").append(
+								"<option value=\""+data[i].number+"\">"
+										+ data[i].name + "</option>");
+					}
+					$("#vestibule").show();
+					$("#vestibules").change(function(){
+						loadFile($("#vestibules option:selected").attr("value"));
+						});
+				});
+	});
+	</script>
+</body>
+</html>
