@@ -13,7 +13,7 @@ public class FTPHandler {
 			client.connect("ftp.dit.in.ua");
 			login = client.login("student", "student");
 			if(login) {	
-				FTPFile[] fileList = client.listFiles();
+				FTPFile[] fileList = client.listFiles("/ADBK_dump20130225");
 				String[] stringList = new String[fileList.length];
 				for(int i = 0; i < fileList.length; i++) {
 					stringList[i] = fileList[i].getName();
@@ -35,13 +35,14 @@ public class FTPHandler {
 		return new String[1];
 	}
 
-	public void getFileFromFTP(String filename, String destinationDirectory) {
+	public void getFileFromFTP(String filename, String destinationFile) {
 		try {
 			client.connect("ftp.dit.in.ua");
 			login = client.login("student", "student");
 			if(login) {
+				client.changeWorkingDirectory("/ADBK_dump20130225");
 				File file = new File(filename);
-				File dir = new File(destinationDirectory);
+				File dir = new File(destinationFile);
 				OutputStream os = new BufferedOutputStream(new FileOutputStream(dir));
 				client.retrieveFile(file.getName(), os);
 				os.close();
