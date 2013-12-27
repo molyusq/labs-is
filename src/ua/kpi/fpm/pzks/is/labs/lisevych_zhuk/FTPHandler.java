@@ -8,14 +8,14 @@ public class FTPHandler {
 	private FTPClient client = new FTPClient();
 	private boolean login;
 
-	public String[] getFileList(String directory){
+	public String[] getFileList(String directory) {
 		try {
 			client.connect("ftp.dit.in.ua");
 			login = client.login("student", "student");
-			if(login) {	
-				FTPFile[] fileList = client.listFiles();
+			if (login) {
+				FTPFile[] fileList = client.listFiles(directory);
 				String[] stringList = new String[fileList.length];
-				for(int i = 0; i < fileList.length; i++) {
+				for (int i = 0; i < fileList.length; i++) {
 					stringList[i] = fileList[i].getName();
 				}
 				return stringList;
@@ -31,7 +31,7 @@ public class FTPHandler {
 				e.printStackTrace();
 			}
 		}
-		
+
 		return new String[1];
 	}
 
@@ -39,14 +39,15 @@ public class FTPHandler {
 		try {
 			client.connect("ftp.dit.in.ua");
 			login = client.login("student", "student");
-			if(login) {
-				File file = new File(filename);
-				File dir = new File(destinationDirectory);
-				OutputStream os = new BufferedOutputStream(new FileOutputStream(dir));
-				client.retrieveFile(file.getName(), os);
+			if (login) {
+				File dir = new File(destinationDirectory + "/" + filename);
+				OutputStream os = 
+						new FileOutputStream(dir);
+				client.retrieveFile("/ADBK_dump20130225/" + filename, os);
+				os.flush();
 				os.close();
 			}
-		} catch(Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
 			try {

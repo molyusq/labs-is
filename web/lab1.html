@@ -15,32 +15,72 @@
 
 		</select>
 	</div>
-	<div id="vestibule_selected" style="display: none;"></div>
+	<div id="vestibule_selected" style="display: none;"><strong>Selected vestibule: </strong></div>
 
-
-	<select id="scanner" style="display: none;">
+	<div id="scanner" style="display: none;">
 		<h5>Select scanner:</h5>
-	</select>
+		<select id="scanners">
+		</select>
+	</div>
+	<div id="file_params" style="display: none;">
+		<div id="file_name"><strong>Selected file: </strong></div>
+		<div id="creation_date"></div>
+	</div>
 	<br />
+	<div id="unzip" style="display: none;">
+		<a class="btn btn-primary" id="btn-unzip">Unzip</a>
+	</div>
 	<a class="btn btn-primary" style="display: none;">Download</a>
 	<script>
-	var loadFile = function(file) {
-		$.ajax("").ready(fcuntion(data){
-				
+	var unzip = function() {
+		$("#unzip").html("Pending...");
+		};
+	var loadSfile = function(file) {
+		$("#file_name").append(file);
+		$("#creation_date").html("Downloading file...");
+		$("#file_params").show();
+		$.ajax("/is/rest/res/loadfile?file="+file).done(function(data){
+			$("#creation_date").html("<strong>Creation date: </strong>"+data);
+			$("#unzip a").attr("file", file);
+			$("#unzip").show();
+			$("#btn-unzip").click(function() {
+				unzip();
+				});
+			});
+			
+		};
+		
+	var loadScanners = function(file) {
+		$.ajax("/is/rest/res/scanners?vestibule="+file+"").done(function(data){
+			$("#scanners").append(
+			"<option value=NONE>NONE</option>");
+				for(var i=0; i<data.length; i++) {
+					$("#scanners").append("<option value=\""+data[i]+"\">"
+							+ data[i] + "</option>");
+					}
+				$("#scanner").show();
+				$("#scanner").change(function() {
+					$("#scanner").hide();
+					loadSfile($("#scanners option:selected").html());
+					});
 			});
 	};
 
 	$(document).ready(function() {
 		$.ajax("/is/rest/res/vestibules").done(
 				function(data) {
+					$("#vestibules").append(
+							"<option value=NONE>NONE</option>");
 					for (var i = 0; i < data.length; i++) {
 						$("#vestibules").append(
 								"<option value=\""+data[i].number+"\">"
 										+ data[i].name + "</option>");
 					}
 					$("#vestibule").show();
-					$("#vestibules").change(function(){
-						loadFile($("#vestibules option:selected").attr("value"));
+					$("#vestibules").change(function() {
+						$("#vestibule").hide();
+						$("#vestibule_selected").append($("#vestibules option:selected").html()).show();
+						loadScanners($("#vestibules option:selected").attr("value"));
 						});
 				});
 	});
