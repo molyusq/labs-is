@@ -1,0 +1,32 @@
+package ua.kpi.fpm.pzks.is.labs.lisevych_zhuk.rest;
+
+public class EventData {
+	private String date;
+	private String name;
+
+	public EventData() {
+
+	}
+
+	public EventData(String date, String name) {
+		this.date = date;
+		this.name = name;
+	}
+
+	public String getDate() {
+		return date;
+	}
+
+	public void setDate(String date) {
+		this.date = date;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+}

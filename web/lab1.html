@@ -30,13 +30,59 @@
 	<div id="unzip" style="display: none;">
 		<a class="btn btn-primary" id="btn-unzip">Unzip</a>
 	</div>
-	<a class="btn btn-primary" style="display: none;">Download</a>
+	<div id="event" style="display: none;">
+		<h5>Card number:</h5>
+		<select id="nums">
+			
+		</select>
+		<table id="events" >
+			<thead>
+				<tr>
+					<th>DateTime</th>
+					<th>Event</th>
+				</tr>
+			</thead>
+			<tbody>
+				
+			</tbody>
+		</table>
+	</div>
 	<script>
+	var loadEvents = function() {
+		$("#events tbody").empty();
+		$.ajax("/is/rest/res/events?db="+$("#event").attr("db")+"&cn="+$("#nums option:selected").attr("value")).done(function(data){
+				for(var i=0; i<data.length; i++) {
+					$("#events tbody").append("<tr><td>"+data[i].date+"</td><td>"+data[i].name+"</td></tr>");
+					}
+			});
+		};
+	var loadNumbers = function() {
+		$("#unzip").html("Loading card numbers...");
+		$.ajax("/is/rest/res/nums?db="+$("#event").attr("db")).done(function(data) {
+			$("#nums").append(
+			"<option value=NONE>NONE</option>");
+				for(var i=0; i<data.length; i++) {
+					$("#nums").append("<option value=\""+data[i]+"\">"
+							+ data[i] + "</option>");
+					}
+			$("#unzip").hide();
+			$("#event").show();
+			$("#nums").change(function(){
+				loadEvents();
+				});
+			});
+		};
 	var unzip = function() {
 		$("#unzip").html("Pending...");
+		$.ajax("/is/rest/res/unzip?file="+$("#file_name").attr("file")).done(function(data){
+			
+			$("#event").attr("db", data);
+			loadNumbers();
+			});
 		};
 	var loadSfile = function(file) {
 		$("#file_name").append(file);
+		$("#file_name").attr("file", file);
 		$("#creation_date").html("Downloading file...");
 		$("#file_params").show();
 		$.ajax("/is/rest/res/loadfile?file="+file).done(function(data){

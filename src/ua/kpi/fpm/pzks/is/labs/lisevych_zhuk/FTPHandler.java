@@ -40,12 +40,16 @@ public class FTPHandler {
 			client.connect("ftp.dit.in.ua");
 			login = client.login("student", "student");
 			if (login) {
+				client.setFileType(FTP.BINARY_FILE_TYPE);
 				File dir = new File(destinationDirectory + "/" + filename);
-				OutputStream os = 
-						new FileOutputStream(dir);
+				if (dir.exists()) {
+					return;
+				}
+				FileOutputStream fos = new FileOutputStream(dir);
+				OutputStream os = new BufferedOutputStream(fos);
 				client.retrieveFile("/ADBK_dump20130225/" + filename, os);
-				os.flush();
 				os.close();
+				fos.close();
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

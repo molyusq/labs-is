@@ -7,27 +7,44 @@ import de.innosystec.unrar.*;
 import de.innosystec.unrar.rarfile.*;
 
 public class ArchiveHandler {
-	
-	public void decompressFile(String filename) {
-		File file = new File(filename);
+
+	public String decompressFile(String filename, String dir) {
+		String result = "";
 		Archive a = null;
 		try {
-			a = new Archive(file);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		if(a != null) {
-			List<FileHeader> headers = a.getFileHeaders();
-			System.out.println(headers.toString());
-			for(FileHeader fh : headers) {
-				try {
-				File out = new File(fh.getFileNameString().trim());
-				FileOutputStream fos = new FileOutputStream(out);
-				a.extractFile(fh, fos);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
+			File file = new File(filename);
+			try {
+				a = new Archive(file);
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
+			if (a != null) {
+				List<FileHeader> headers = a.getFileHeaders();
+				for (FileHeader fh : headers) {
+					try {
+						File out = new File(dir
+								+ "/"
+								+ fh.getFileNameString().trim()
+										.replace("\\", "").toLowerCase());
+						FileOutputStream fos = new FileOutputStream(out);
+						a.extractFile(fh, fos);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+				result = headers.get(0).getFileNameString().trim()
+						.replace("\\", "").toLowerCase();
+
+			}
+		} finally {
+			try {
+				a.close();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+
 		}
+
+		return result;
 	}
 }

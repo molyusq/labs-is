@@ -9,6 +9,7 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileTime;
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.Produces;
 import javax.ws.rs.GET;
@@ -16,7 +17,9 @@ import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
+import ua.kpi.fpm.pzks.is.labs.lisevych_zhuk.ArchiveHandler;
 import ua.kpi.fpm.pzks.is.labs.lisevych_zhuk.FTPHandler;
+import ua.kpi.fpm.pzks.is.labs.lisevych_zhuk.SqliteHandler;
 
 @Path("/res")
 public class ResourceServices implements Serializable {
@@ -101,7 +104,33 @@ public class ResourceServices implements Serializable {
 	@GET
 	@Path("unzip")
 	public String unzipFile(@DefaultValue("") @QueryParam("file") String file) {
-		return "unzipped";
+		String filename = System.getProperty("my.project.dir") + "/runtime"
+				+ "/" + file;
+		ArchiveHandler handler = new ArchiveHandler();
+		String result = handler.decompressFile(filename,
+				System.getProperty("my.project.dir") + "/runtime");
+		return result;
+	}
+
+	@GET
+	@Path("nums")
+	@Produces({ MediaType.APPLICATION_JSON })
+	public String[] getCardNumbers(
+			@DefaultValue("base.db3") @QueryParam("db") String db) {
+		String path = System.getProperty("my.project.dir") + "/runtime/" + db;
+		SqliteHandler handler = SqliteHandler.getInstance();
+		return handler.getCardNumbers(path);
+	}
+
+	@GET
+	@Path("events")
+	@Produces({ MediaType.APPLICATION_JSON })
+	public EventData[] getEvents(@QueryParam("cn") String cardNo,
+			@QueryParam("db") String dbPath) {
+		String dbFile = System.getProperty("my.project.dir") + "/runtime/"
+				+ dbPath;
+		SqliteHandler handler = SqliteHandler.getInstance();
+		return handler.selectEvents(cardNo);
 	}
 
 }
